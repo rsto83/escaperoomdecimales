@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape Room: El Desafío del Gaucho Mateo</title>
+    <!-- Tailwind CSS para diseño responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts para tipografía amigable -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #d35400 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .font-game {
+            font-family: 'Fredoka', cursive;
+        }
+        .card-gaucho {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border: 4px solid #b5651d;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+        }
+        .btn-gaucho {
+            background: #d35400;
+            color: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 5px 0 #873600;
+            cursor: pointer;
+        }
+        .btn-gaucho:hover {
+            transform: translateY(-2px);
+            background: #e67e22;
+            box-shadow: 0 7px 0 #873600;
+        }
+        .btn-gaucho:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #873600;
+        }
+        .btn-option {
+            background: #ffffff;
+            border: 3px solid #cbd5e1;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .btn-option:hover {
+            border-color: #d35400;
+            background: #fff7ed;
+            transform: scale(1.02);
+        }
+        .btn-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .timer-bar {
+            transition: width 1s linear, background-color 0.3s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 md:p-6 min-h-screen text-slate-800">
+
+    <div id="game-container" class="w-full max-w-3xl card-gaucho rounded-3xl p-5 md:p-8 relative overflow-hidden my-auto">
+        
+        <!-- Header de juego: Vidas, Temporizador y Título -->
+        <header id="game-header" class="hidden flex flex-wrap justify-between items-center bg-amber-100/90 p-3 md:p-4 rounded-2xl mb-6 border-2 border-amber-800 shadow-inner">
+            <div class="flex items-center gap-2 mb-2 sm:mb-0">
+                <span class="font-bold text-amber-900 text-sm md:text-base">Vidas:</span>
+                <div id="lives-container" class="flex gap-1 text-red-600 text-xl md:text-2xl">
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <i class="fa-solid fa-mug-hot"></i>
+                    <i class="fa-solid fa-mug-hot"></i>
+                </div>
+            </div>
+            <div class="text-center font-game text-amber-950 text-lg md:text-xl font-bold" id="level-title">
+                Nivel 1
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-stopwatch text-amber-800 text-xl"></i>
+                <span id="timer-text" class="font-bold font-mono text-xl text-amber-900">00:25</span>
+            </div>
+            <!-- Barra de tiempo -->
+            <div class="w-full bg-amber-200 h-3 rounded-full mt-3 overflow-hidden border border-amber-400">
+                <div id="timer-progress" class="bg-amber-600 h-full w-full timer-bar"></div>
+            </div>
+        </header>
+
+        <!-- PANTALLA DE INICIO -->
+        <div id="screen-start" class="text-center py-4 space-y-6">
+            <div class="text-6xl text-amber-800 animate-bounce">
+                <i class="fa-solid fa-hat-cowboy"></i>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-game text-amber-900 leading-tight">El Desafío del Gaucho Mateo</h1>
+            <p class="text-base md:text-lg text-slate-700 max-w-xl mx-auto leading-relaxed">
+                ¡Ahijuna, chango! El Gaucho Mateo ha perdido las llaves de su rancho y sus pertenencias en la pampa. 
+                Ayúdalo a resolver estos desafíos de <b>números decimales</b> para abrir la tranquera antes de que anochezca.
+            </p>
+
+            <div class="bg-amber-50 p-4 rounded-2xl text-left border-2 border-amber-200 max-w-md mx-auto space-y-2 text-sm md:text-base shadow-sm">
+                <p class="font-bold text-amber-900 border-b border-amber-300 pb-1">📜 Guía Rápida de Decimales (4º EBI):</p>
+                <p>👉 <b>Décimos:</b> 1er lugar tras la coma (Ej: 0,<span class="text-amber-700 font-bold">4</span>)</p>
+                <p>👉 <b>Centésimos:</b> 2do lugar tras la coma (Ej: 0,0<span class="text-amber-700 font-bold">5</span>)</p>
+                <p>👉 <b>Milésimos:</b> 3er lugar tras la coma (Ej: 0,00<span class="text-amber-700 font-bold">8</span>)</p>
+                <p>👉 <b>Comparar:</b> Mira primero el entero y luego décimos, centésimos y milésimos.</p>
+            </div>
+
+            <button onclick="startGame()" class="btn-gaucho text-xl font-game px-8 py-4 rounded-full text-white font-bold tracking-wide w-full max-w-xs shadow-lg">
+                ¡Entrar al Rancho! <i class="fa-solid fa-key ml-2"></i>
+            </button>
+        </div>
+
+        <!-- PANTALLA DE JUEGO PRINCIPAL -->
+        <div id="screen-game" class="hidden space-y-6">
+            
+            <!-- Narrativa del nivel -->
+            <div class="bg-amber-50 p-4 rounded-2xl border-l-8 border-amber-700 flex items-start gap-4 shadow-sm">
+                <div class="text-3xl text-amber-800 mt-1" id="level-icon">
+                    <i class="fa-solid fa-mug-hot"></i>
+                </div>
+                <div>
+                    <h2 class="font-bold text-amber-950 text-lg md:text-xl" id="story-title">El Mate de Plata</h2>
+                    <p class="text-slate-700 text-sm md:text-base" id="story-text">Cargando desafío...</p>
+                </div>
+            </div>
+
+            <!-- Pregunta del Desafío -->
+            <div class="text-center py-2">
+                <h3 id="question-text" class="text-lg md:text-2xl font-bold text-slate-800 mb-5 px-2">
+                    ¿Cuál número es el MÁS GRANDE?
+                </h3>
+
+                <!-- Contenedor de Opciones -->
+                <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto">
+                    <!-- Generado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Feedback de respuesta -->
+            <div id="feedback" class="hidden p-4 rounded-2xl text-center font-bold text-base md:text-lg"></div>
+        </div>
+
+        <!-- MODAL / PANTALLA DE DERROTA -->
+        <div id="screen-gameover" class="hidden text-center py-8 space-y-6">
+            <div class="text-6xl text-slate-600">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+            </div>
+            <h2 class="text-3xl font-game text-red-700">¡Se hizo de noche en la pampa!</h2>
+            <p class="text-slate-700 text-lg max-w-md mx-auto" id="gameover-reason">
+                Te has quedado sin tiempo o sin vidas. Mateo no pudo abrir la tranquera a tiempo.
+            </p>
+            <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-4 text-left text-sm max-w-md mx-auto shadow-sm">
+                <span class="font-bold text-red-900 block mb-1">💡 Consejo del Gaucho Mateo:</span>
+                <p id="learning-tip" class="text-slate-700">Recuerda comparar primero la parte entera y luego los décimos uno por uno.</p>
+            </div>
+            <button onclick="restartGame()" class="btn-gaucho text-lg font-game px-8 py-3 rounded-full">
+                <i class="fa-solid fa-rotate-right mr-2"></i> Intentar de nuevo
+            </button>
+        </div>
+
+        <!-- PANTALLA DE VICTORIA FINAL -->
+        <div id="screen-victory" class="hidden text-center py-8 space-y-6">
+            <div class="text-6xl text-amber-500 animate-bounce">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-game text-amber-900">¡Lo lograste, Paisano!</h2>
+            <p class="text-base md:text-lg text-slate-700 max-w-md mx-auto">
+                Has ayudado al Gaucho Mateo a recuperar sus pertenencias y abrir la tranquera. ¡Demostraste ser un verdadero genio con los números decimales!
+            </p>
+
+            <div class="bg-amber-100/80 p-4 rounded-2xl max-w-md mx-auto text-amber-950 border border-amber-300 text-left shadow-sm">
+                <h3 class="font-bold text-lg mb-2 text-center">🏆 Tus Logros Matemáticos:</h3>
+                <ul class="text-sm space-y-1.5 pl-4 list-disc">
+                    <li>Identificaste números mayores y menores.</li>
+                    <li>Reconociste la posición de los décimos, centésimos y milésimos.</li>
+                    <li>Resolviste problemas de orden y comparación con decimales.</li>
+                </ul>
+            </div>
+
+            <button onclick="restartGame()" class="btn-gaucho text-xl font-game px-8 py-4 rounded-full">
+                ¡Jugar otra vez! <i class="fa-solid fa-horse ml-2"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Variables de Estado del Juego
+        let currentLevel = 0;
+        let lives = 3;
+        let timer = null;
+        let timeLeft = 25;
+
+        // Banco de Preguntas / Niveles Adaptados a 4to EBI (Uruguay / Nivel Medio)
+        const levels = [
+            {
+                title: "El Mate Perdido",
+                icon: "fa-mug-hot",
+                story: "Mateo quiere preparar un mate bien amargo. Necesita encontrar el paquete de yerba MÁS GRANDE.",
+                question: "¿Cuál de estos números decimales es el MÁS GRANDE?",
+                timeLimit: 25,
+                options: [
+                    { text: "2,45", correct: false },
+                    { text: "2,8", correct: true },
+                    { text: "2,19", correct: false },
+                    { text: "2,09", correct: false }
+                ],
+                tip: "¡Ojo! 2,8 equivale a 2,80. Como 8 décimos es más que 4 o 1 décimo, 2,8 es el mayor."
+            },
+            {
+                title: "El Facón de Plata",
+                icon: "fa-shield-halved",
+                story: "Mateo busca su facón. El grabado de la hoja tiene una cifra con un número en los DÉCIMOS.",
+                question: "¿En cuál de estos números el dígito 7 está en la posición de los DÉCIMOS?",
+                timeLimit: 25,
+                options: [
+                    { text: "3,07", correct: false },
+                    { text: "0,007", correct: false },
+                    { text: "5,72", correct: true },
+                    { text: "1,147", correct: false }
+                ],
+                tip: "Los DÉCIMOS son la primera cifra justo después de la coma (Ejemplo: 5,72)."
+            },
+            {
+                title: "La Rastra de Oro",
+                icon: "fa-coins",
+                story: "Para ajustar su rastra, Mateo necesita encontrar el peso en gramos MÁS PEQUEÑO.",
+                question: "¿Cuál de los siguientes números es el MÁS PEQUEÑO?",
+                timeLimit: 25,
+                options: [
+                    { text: "0,35", correct: false },
+                    { text: "0,09", correct: true },
+                    { text: "0,4", correct: false },
+                    { text: "0,12", correct: false }
+                ],
+                tip: "Compara los décimos: 0,09 tiene cero décimos, por eso es menor que 0,12, 0,35 o 0,4."
+            },
+            {
+                title: "Los Milésimos del Pingo",
+                icon: "fa-horse",
+                story: "El caballo de Mateo necesita una herradura a medida. El herrero te pide identificar los MILÉSIMOS.",
+                question: "¿En qué número el 5 ocupa el lugar de los MILÉSIMOS?",
+                timeLimit: 25,
+                options: [
+                    { text: "4,512", correct: false },
+                    { text: "0,154", correct: false },
+                    { text: "1,005", correct: true },
+                    { text: "5,23", correct: false }
+                ],
+                tip: "Los MILÉSIMOS ocupan el tercer lugar después de la coma (Ejemplo: 1,005)."
+            },
+            {
+                title: "El Lazo del Campo",
+                icon: "fa-ring",
+                story: "Mateo necesita el lazo más largo para alcanzar un ternero. ¿Cuál es la medida MAYOR?",
+                question: "¿Cuál de estas opciones representa el número MAYOR?",
+                timeLimit: 20,
+                options: [
+                    { text: "4,250", correct: false },
+                    { text: "4,3", correct: true },
+                    { text: "4,099", correct: false },
+                    { text: "4,18", correct: false }
+                ],
+                tip: "4,3 es igual a 4,300. Al comparar los décimos (3 décimos), supera a 4,250 y a 4,18."
+            },
+            {
+                title: "La Tranquera Final",
+                icon: "fa-door-open",
+                story: "¡Último candado! Para abrir la tranquera debes identificar el número con CENTÉSIMOS.",
+                question: "¿En cuál de estos números el 9 está en el lugar de los CENTÉSIMOS?",
+                timeLimit: 20,
+                options: [
+                    { text: "9,12", correct: false },
+                    { text: "0,91", correct: false },
+                    { text: "3,492", correct: true },
+                    { text: "0,009", correct: false }
+                ],
+                tip: "Los CENTÉSIMOS ocupan la segunda posición después de la coma decimal (Ejemplo: 3,492)."
+            }
+        ];
+
+        function startGame() {
+            currentLevel = 0;
+            lives = 3;
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-gameover').classList.add('hidden');
+            document.getElementById('screen-victory').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('game-header').classList.remove('hidden');
+            
+            updateLivesDisplay();
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (currentLevel >= levels.length) {
+                showVictory();
+                return;
+            }
+
+            const lvl = levels[currentLevel];
+            
+            // Actualizar interfaz con datos del nivel
+            document.getElementById('level-title').innerText = `Desafío ${currentLevel + 1} de ${levels.length}`;
+            document.getElementById('story-title').innerText = lvl.title;
+            document.getElementById('story-text').innerText = lvl.story;
+            document.getElementById('question-text').innerText = lvl.question;
+            document.getElementById('level-icon').innerHTML = `<i class="fa-solid ${lvl.icon}"></i>`;
+            
+            // Ocultar mensaje previo de feedback
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.classList.add('hidden');
+
+            // Renderizar Opciones de respuesta
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            // Mezclar opciones para dinamismo
+            const shuffledOptions = [...lvl.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-option font-game text-xl md:text-2xl py-4 px-6 rounded-2xl text-amber-950 font-bold shadow-sm w-full';
+                btn.innerText = opt.text;
+                btn.onclick = () => checkAnswer(opt.correct, lvl.tip);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Iniciar temporizador del nivel
+            resetTimer(lvl.timeLimit);
+        }
+
+        function resetTimer(seconds) {
+            clearInterval(timer);
+            timeLeft = seconds;
+            updateTimerDisplay(seconds);
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(seconds);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay(maxSeconds) {
+            const timerText = document.getElementById('timer-text');
+            const timerProgress = document.getElementById('timer-progress');
+
+            const formattedTime = timeLeft < 10 ? `00:0${timeLeft}` : `00:${timeLeft}`;
+            timerText.innerText = formattedTime;
+
+            const percentage = (timeLeft / maxSeconds) * 100;
+            timerProgress.style.width = `${Math.max(0, percentage)}%`;
+
+            if (percentage <= 30) {
+                timerProgress.className = "bg-red-600 h-full w-full timer-bar";
+                timerText.className = "font-bold font-mono text-xl text-red-600 animate-pulse";
+            } else {
+                timerProgress.className = "bg-amber-600 h-full w-full timer-bar";
+                timerText.className = "font-bold font-mono text-xl text-amber-900";
+            }
+        }
+
+        function checkAnswer(isCorrect, tip) {
+            clearInterval(timer);
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.classList.remove('hidden');
+
+            // Deshabilitar botones durante feedback
+            const optionBtns = document.querySelectorAll('.btn-option');
+            optionBtns.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-base md:text-lg bg-emerald-100 text-emerald-800 border-2 border-emerald-400";
+                feedbackEl.innerHTML = '¡Correcto, paisano! <i class="fa-solid fa-circle-check ml-1 text-emerald-600"></i> Avanzando...';
+                
+                setTimeout(() => {
+                    currentLevel++;
+                    loadLevel();
+                }, 1300);
+            } else {
+                lives--;
+                updateLivesDisplay();
+                
+                // Animación de sacudida
+                const container = document.getElementById('game-container');
+                container.classList.add('animate-shake');
+                setTimeout(() => {
+                    container.classList.remove('animate-shake');
+                }, 500);
+
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-base md:text-lg bg-red-100 text-red-800 border-2 border-red-300";
+                feedbackEl.innerHTML = `¡Esa no es la opción correcta! Te quedan ${lives} ${lives === 1 ? 'vida' : 'vidas'}.`;
+
+                if (lives <= 0) {
+                    setTimeout(() => {
+                        showGameOver("Te has quedado sin vidas. ¡El Gaucho Mateo necesita repasar los decimales!");
+                        document.getElementById('learning-tip').innerText = tip;
+                    }, 1400);
+                } else {
+                    setTimeout(() => {
+                        resetTimer(levels[currentLevel].timeLimit);
+                        feedbackEl.classList.add('hidden');
+                        optionBtns.forEach(btn => btn.disabled = false);
+                    }, 1600);
+                }
+            }
+        }
+
+        function handleTimeOut() {
+            lives--;
+            updateLivesDisplay();
+
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.classList.remove('hidden');
+            feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-base md:text-lg bg-red-100 text-red-800 border-2 border-red-300";
+            feedbackEl.innerHTML = "⏰ ¡Se agotó el tiempo de este desafío!";
+
+            if (lives <= 0) {
+                setTimeout(() => {
+                    showGameOver("El tiempo llegó a su fin y te quedaste sin vidas.");
+                    document.getElementById('learning-tip').innerText = levels[currentLevel].tip;
+                }, 1400);
+            } else {
+                setTimeout(() => {
+                    loadLevel();
+                }, 1400);
+            }
+        }
+
+        function updateLivesDisplay() {
+            const container = document.getElementById('lives-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < lives) {
+                    container.innerHTML += '<i class="fa-solid fa-mug-hot text-amber-800"></i>';
+                } else {
+                    container.innerHTML += '<i class="fa-solid fa-mug-hot text-slate-300"></i>';
+                }
+            }
+        }
+
+        function showGameOver(reason) {
+            clearInterval(timer);
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('game-header').classList.add('hidden');
+            document.getElementById('screen-gameover').classList.remove('hidden');
+            document.getElementById('gameover-reason').innerText = reason;
+        }
+
+        function showVictory() {
+            clearInterval(timer);
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('game-header').classList.add('hidden');
+            document.getElementById('screen-victory').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            startGame();
+        }
+    </script>
+</body>
+</html>
